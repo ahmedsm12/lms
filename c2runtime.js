@@ -21124,7 +21124,6 @@ cr.getObjectRefTable = function () { return [
 	cr.plugins_.Keyboard.prototype.exps.LastKeyCode,
 	cr.system_object.prototype.cnds.IsGroupActive,
 	cr.plugins_.gamepad.prototype.cnds.CompareAxis,
-	cr.plugins_.Keyboard.prototype.cnds.IsKeyCodeDown,
 	cr.behaviors.EightDir.prototype.acts.SimulateControl,
 	cr.plugins_.gamepad.prototype.cnds.OnButtonDown,
 	cr.plugins_.video.prototype.cnds.IsBoolInstanceVarSet,
