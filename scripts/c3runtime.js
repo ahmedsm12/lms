@@ -3231,12 +3231,15 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.PlatformInfo.Exps.DeviceMemory,
 		C3.Plugins.PlatformInfo.Exps.HardwareConcurrency,
 		C3.Plugins.PlatformInfo.Exps.Renderer,
-		C3.Plugins.PlatformInfo.Exps.RendererDetail
+		C3.Plugins.PlatformInfo.Exps.RendererDetail,
+		C3.Plugins.System.Cnds.EveryTick,
+		C3.Plugins.System.Exps.fps
 	];
 };
 self.C3_JsPropNameTable = [
 	{PlatformInfo: 0},
-	{t1: 0}
+	{t1: 0},
+	{t2: 0}
 ];
 }
 
@@ -3343,6 +3346,10 @@ self.C3_ExpressionFuncs = [
 			const f2 = p._GetNode(2).GetBoundMethod();
 			const f3 = p._GetNode(3).GetBoundMethod();
 			return () => (((((((and(((and("|ram| ", f0()) + "\n") + "|cocurency| "), f1()) + "\n") + "|renderer| ") + f2()) + "\n") + "|ren details|{ ") + f3()) + "}");
+		},
+		p => {
+			const f0 = p._GetNode(0).GetBoundMethod();
+			return () => f0();
 		}
 ];
 
