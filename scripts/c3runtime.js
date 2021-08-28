@@ -2985,25 +2985,25 @@ e=>this._OnJobWorkerMessage(e)}catch(err){this._hadErrorCreatingWorker=true;this
 
 {
 self["C3_Shaders"] = {};
-self["C3_Shaders"]["replacesolidcolor"] = {
-	src: "varying mediump vec2 vTex;\nuniform lowp sampler2D samplerFront;\nuniform lowp vec3 sourceColor;\nuniform lowp vec3 destColor;\nuniform lowp float tolerance;\nvoid main(void)\n{\nlowp vec4 front = texture2D(samplerFront, vTex);\nlowp float a = front.a;\nif (a != 0.0)\nfront.rgb /= a;\nlowp float diff = length(front.rgb - sourceColor);\nif (diff <= tolerance)\n{\nfront.rgb = destColor;\n}\nfront.rgb *= a;\ngl_FragColor = front;\n}",
-	extendBoxHorizontal: 0,
-	extendBoxVertical: 0,
+self["C3_Shaders"]["warpradial"] = {
+	src: "#ifdef GL_FRAGMENT_PRECISION_HIGH\n#define highmedp highp\n#else\n#define highmedp mediump\n#endif\nvarying mediump vec2 vTex;\nuniform lowp sampler2D samplerFront;\nuniform mediump vec2 srcOriginStart;\nuniform mediump vec2 srcOriginEnd;\nuniform highmedp float seconds;\nuniform mediump float freq;\nuniform mediump float amp;\nuniform mediump float speed;\nconst mediump float PI = 3.1415926;\nvoid main(void)\n{\nmediump vec2 srcOriginSize = srcOriginEnd - srcOriginStart;\nmediump vec2 tex = (vTex - srcOriginStart) / srcOriginSize;\ntex = tex * 2.0 - 1.0;\nmediump float d = length(tex);\nmediump float a = atan(tex.y, tex.x);\na += sin(a * freq + (seconds * speed)) * amp;\ntex.x = cos(a) * d;\ntex.y = sin(a) * d;\ntex = (tex + 1.0) / 2.0;\ntex = clamp(tex, 0.0, 1.0);\ntex = tex * srcOriginSize + srcOriginStart;\ngl_FragColor = texture2D(samplerFront, tex);\n}",
+	extendBoxHorizontal: 30,
+	extendBoxVertical: 30,
 	crossSampling: false,
 	mustPreDraw: false,
-	preservesOpaqueness: true,
-	animated: false,
-	parameters: [["sourceColor",0,"color"],["destColor",0,"color"],["tolerance",0,"percent"]]
+	preservesOpaqueness: false,
+	animated: true,
+	parameters: [["freq",0,"float"],["amp",0,"percent"],["speed",0,"float"]]
 };
-self["C3_Shaders"]["brightness"] = {
-	src: "varying mediump vec2 vTex;\nuniform lowp sampler2D samplerFront;\nuniform lowp float brightness;\nvoid main(void)\n{\nlowp vec4 front = texture2D(samplerFront, vTex);\nlowp float a = front.a;\nif (a != 0.0)\nfront.rgb /= front.a;\nfront.rgb += (brightness - 1.0);\nfront.rgb *= a;\ngl_FragColor = front;\n}",
+self["C3_Shaders"]["dodge"] = {
+	src: "varying mediump vec2 vTex;\nuniform lowp sampler2D samplerFront;\nuniform mediump vec2 srcStart;\nuniform mediump vec2 srcEnd;\nuniform lowp sampler2D samplerBack;\nuniform mediump vec2 destStart;\nuniform mediump vec2 destEnd;\nvoid main(void)\n{\nlowp vec4 front = texture2D(samplerFront, vTex);\nmediump vec2 tex = (vTex - srcStart) / (srcEnd - srcStart);\nlowp vec4 back = texture2D(samplerBack, mix(destStart, destEnd, tex));\nfront.rgb = (back.rgb * front.a) / (1.0 - front.rgb);\ngl_FragColor = front * back.a;\n}",
 	extendBoxHorizontal: 0,
 	extendBoxVertical: 0,
 	crossSampling: false,
 	mustPreDraw: false,
-	preservesOpaqueness: true,
+	preservesOpaqueness: false,
 	animated: false,
-	parameters: [["brightness",0,"percent"]]
+	parameters: []
 };
 
 }
@@ -3630,6 +3630,8 @@ self.C3_JsPropNameTable = [
 	{"8HtZx": 0},
 	{PAipY: 0},
 	{DRAGABLE_UI: 0},
+	{XYqDb: 0},
+	{glowEffect: 0},
 	{DraggUIFam: 0}
 ];
 }
