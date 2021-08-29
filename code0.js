@@ -5,6 +5,8 @@ gdjs.New_32sceneCode.GDNewObject2Objects1= [];
 gdjs.New_32sceneCode.GDNewObject2Objects2= [];
 gdjs.New_32sceneCode.GDNewObject3Objects1= [];
 gdjs.New_32sceneCode.GDNewObject3Objects2= [];
+gdjs.New_32sceneCode.GDkeyObjects1= [];
+gdjs.New_32sceneCode.GDkeyObjects2= [];
 
 gdjs.New_32sceneCode.conditionTrue_0 = {val:false};
 gdjs.New_32sceneCode.condition0IsTrue_0 = {val:false};
@@ -135,6 +137,22 @@ gdjs.copyArray(runtimeScene.getObjects("NewObject2"), gdjs.New_32sceneCode.GDNew
 
 {
 
+
+gdjs.New_32sceneCode.condition0IsTrue_0.val = false;
+{
+gdjs.New_32sceneCode.condition0IsTrue_0.val = gdjs.evtTools.input.anyKeyPressed(runtimeScene);
+}if (gdjs.New_32sceneCode.condition0IsTrue_0.val) {
+gdjs.copyArray(runtimeScene.getObjects("key"), gdjs.New_32sceneCode.GDkeyObjects1);
+{for(var i = 0, len = gdjs.New_32sceneCode.GDkeyObjects1.length ;i < len;++i) {
+    gdjs.New_32sceneCode.GDkeyObjects1[i].setString(gdjs.evtTools.input.lastPressedKey(runtimeScene));
+}
+}}
+
+}
+
+
+{
+
 gdjs.copyArray(runtimeScene.getObjects("NewObject"), gdjs.New_32sceneCode.GDNewObjectObjects1);
 
 gdjs.New_32sceneCode.condition0IsTrue_0.val = false;
@@ -167,22 +185,6 @@ gdjs.copyArray(runtimeScene.getObjects("NewObject3"), gdjs.New_32sceneCode.GDNew
 }
 
 
-{
-
-
-gdjs.New_32sceneCode.condition0IsTrue_0.val = false;
-{
-gdjs.New_32sceneCode.condition0IsTrue_0.val = gdjs.evtTools.common.logicalNegation(false);
-}if (gdjs.New_32sceneCode.condition0IsTrue_0.val) {
-gdjs.copyArray(runtimeScene.getObjects("NewObject3"), gdjs.New_32sceneCode.GDNewObject3Objects1);
-{for(var i = 0, len = gdjs.New_32sceneCode.GDNewObject3Objects1.length ;i < len;++i) {
-    gdjs.New_32sceneCode.GDNewObject3Objects1[i].setString(gdjs.evtTools.common.toString(Math.round(1 / gdjs.evtTools.runtimeScene.getElapsedTimeInSeconds(runtimeScene))));
-}
-}}
-
-}
-
-
 };
 
 gdjs.New_32sceneCode.func = function(runtimeScene) {
@@ -194,6 +196,8 @@ gdjs.New_32sceneCode.GDNewObject2Objects1.length = 0;
 gdjs.New_32sceneCode.GDNewObject2Objects2.length = 0;
 gdjs.New_32sceneCode.GDNewObject3Objects1.length = 0;
 gdjs.New_32sceneCode.GDNewObject3Objects2.length = 0;
+gdjs.New_32sceneCode.GDkeyObjects1.length = 0;
+gdjs.New_32sceneCode.GDkeyObjects2.length = 0;
 
 gdjs.New_32sceneCode.eventsList0(runtimeScene);
 return;
