@@ -72,8 +72,12 @@ gdjs.New_32sceneCode.condition0IsTrue_0.val = false;
 {
 gdjs.New_32sceneCode.condition0IsTrue_0.val = gdjs.evtsExt__Gamepads__C_Axis_pushed.func(runtimeScene, 1, "LEFT", "UP", (typeof eventsFunctionContext !== 'undefined' ? eventsFunctionContext : undefined));
 }if (gdjs.New_32sceneCode.condition0IsTrue_0.val) {
+gdjs.copyArray(runtimeScene.getObjects("NewObject"), gdjs.New_32sceneCode.GDNewObjectObjects1);
 gdjs.copyArray(runtimeScene.getObjects("NewObject2"), gdjs.New_32sceneCode.GDNewObject2Objects1);
-{for(var i = 0, len = gdjs.New_32sceneCode.GDNewObject2Objects1.length ;i < len;++i) {
+{for(var i = 0, len = gdjs.New_32sceneCode.GDNewObjectObjects1.length ;i < len;++i) {
+    gdjs.New_32sceneCode.GDNewObjectObjects1[i].play();
+}
+}{for(var i = 0, len = gdjs.New_32sceneCode.GDNewObject2Objects1.length ;i < len;++i) {
     gdjs.New_32sceneCode.GDNewObject2Objects1[i].getBehavior("TopDownMovement").simulateUpKey();
 }
 }}
