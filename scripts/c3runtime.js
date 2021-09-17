@@ -3516,16 +3516,12 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Sprite,
 		C3.Plugins.Browser,
 		C3.Plugins.System.Cnds.OnLayoutStart,
-		C3.Behaviors.Tween.Acts.TweenValue,
 		C3.Plugins.Browser.Acts.RequestFullScreen,
-		C3.Behaviors.Tween.Cnds.IsPlaying,
-		C3.Plugins.TiledBg.Acts.SetImageScaleY,
-		C3.Behaviors.Tween.Exps.Value,
-		C3.Plugins.TiledBg.Acts.SetImageOffsetX,
-		C3.Plugins.Sprite.Acts.SetY,
 		C3.Plugins.System.Cnds.Every,
 		C3.Plugins.Spritefont2.Acts.SetText,
-		C3.Plugins.System.Exps.fps
+		C3.Plugins.System.Exps.fps,
+		C3.Plugins.System.Cnds.EveryTick,
+		C3.Plugins.Sprite.Acts.RotateClockwise
 	];
 };
 self.C3_JsPropNameTable = [
@@ -3534,7 +3530,8 @@ self.C3_JsPropNameTable = [
 	{w2: 0},
 	{SpriteFont: 0},
 	{Sprite: 0},
-	{Browser: 0}
+	{Browser: 0},
+	{Sprite2: 0}
 ];
 }
 
@@ -3635,22 +3632,6 @@ function or(l, r)
 }
 
 self.C3_ExpressionFuncs = [
-		() => "w",
-		() => 70,
-		() => 105,
-		() => 2,
-		p => {
-			const n0 = p._GetNode(0);
-			return () => n0.ExpBehavior("w");
-		},
-		p => {
-			const n0 = p._GetNode(0);
-			return () => (n0.ExpBehavior("w") + 50);
-		},
-		p => {
-			const n0 = p._GetNode(0);
-			return () => (350 - (n0.ExpBehavior("w") / 2));
-		},
 		() => 1,
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
