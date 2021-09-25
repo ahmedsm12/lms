@@ -3772,6 +3772,8 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.System.Exps.fps,
 		C3.Plugins.System.Cnds.IsGroupActive,
 		C3.Plugins.Touch.Cnds.OnTapGestureObject,
+		C3.Plugins.Touch.Cnds.OnHoldGestureObject,
+		C3.Plugins.Touch.Cnds.OnDoubleTapGestureObject,
 		C3.Plugins.System.Acts.SetGroupActive,
 		C3.Plugins.Sprite.Acts.SetOpacity,
 		C3.Behaviors.Tween.Acts.TweenOneProperty,
