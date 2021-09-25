@@ -37,3 +37,13 @@ html, body, canvas {
 }
 
 
+@font-face {
+	font-family: 'arbfonts-mylotusb';
+	src: url('fonts/arbfonts-mylotusb.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'arbfonts-mylotus';
+	src: url('fonts/arbfonts-mylotus.ttf') format('truetype');
+}
+
