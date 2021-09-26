@@ -3755,7 +3755,6 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Mouse,
 		C3.Plugins.Browser,
 		C3.Plugins.System.Cnds.OnLayoutStart,
-		C3.Plugins.Browser.Acts.RequestFullScreen,
 		C3.Plugins.Audio.Acts.Play,
 		C3.Plugins.AJAX.Acts.RequestFile,
 		C3.Plugins.System.Acts.WaitForPreviousActions,
@@ -3794,7 +3793,7 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.System.Cnds.CompareVar,
 		C3.Plugins.System.Acts.SetVar,
 		C3.Plugins.System.Cnds.Else,
-		C3.Plugins.Touch.Cnds.OnDoubleTapGesture,
+		C3.Plugins.Browser.Acts.RequestFullScreen,
 		C3.Plugins.System.Acts.GoToLayout,
 		C3.Plugins.Browser.Cnds.OnBackButton,
 		C3.Plugins.Mouse.Cnds.IsButtonDown
