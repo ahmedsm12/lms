@@ -4065,13 +4065,6 @@ self.C3_ExpressionFuncs = [
 			const v3 = p._GetNode(3).GetVar();
 			return () => n0.ExpObject(30, f1(v2.GetValue()), v3.GetValue());
 		},
-		p => {
-			const n0 = p._GetNode(0);
-			const f1 = p._GetNode(1).GetBoundMethod();
-			const v2 = p._GetNode(2).GetVar();
-			const v3 = p._GetNode(3).GetVar();
-			return () => (and("audio", n0.ExpObject(24, f1(v2.GetValue()), v3.GetValue())) + "_1");
-		},
 		() => -300,
 		p => {
 			const n0 = p._GetNode(0);
