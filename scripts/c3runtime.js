@@ -3318,106 +3318,1146 @@ SetEffect(effect){this.GetWorldInfo().SetBlendMode(effect);this._runtime.UpdateR
 }
 
 {
-'use strict';const C3=self.C3;C3.Behaviors.Tween=class TweenBehavior extends C3.SDKBehaviorBase{constructor(opts){super(opts)}Release(){super.Release()}};
+"use strict";
+// common.js start
+globalThis.easeOutBounceArray = [];
+globalThis.easeInElasticArray = [];
+globalThis.easeOutElasticArray = [];
+globalThis.easeInOutElasticArray = [];
+globalThis.easeInCircle = [];
+globalThis.easeOutCircle = [];
+globalThis.easeInOutCircle = [];
+globalThis.easeInBack = [];
+globalThis.easeOutBack = [];
+globalThis.easeInOutBack = [];
+globalThis.litetween_precision = 10000;
+globalThis.updateLimit = 0; //0.0165;
+globalThis.easeOutBouncefunc = function(t) {
+  var b=0.0;
+  var c=1.0;
+  var d=1.0;
+	if ((t/=d) < (1/2.75)) {
+		result = c*(7.5625*t*t) + b;
+	} else if (t < (2/2.75)) {
+		result = c*(7.5625*(t-=(1.5/2.75))*t + .75) + b;
+	} else if (t < (2.5/2.75)) {
+		result = c*(7.5625*(t-=(2.25/2.75))*t + .9375) + b;
+	} else {
+		result = c*(7.5625*(t-=(2.625/2.75))*t + .984375) + b;
+	}		
+  return result;
+}
+globalThis.do_cmp = function(x, cmp, y)
+{
+  if (typeof x === "undefined" || typeof y === "undefined")
+    return false;
+  switch (cmp)
+  {
+    case 0:     // equal
+      return x === y;
+    case 1:     // not equal
+      return x !== y;
+    case 2:     // less
+      return x < y;
+    case 3:     // less/equal
+      return x <= y;
+    case 4:     // greater
+      return x > y;
+    case 5:     // greater/equal
+      return x >= y;
+    default:
+      return false;
+  }
+}
+globalThis.integerize = function(t, d)
+{
+  return Math.round(t/d*litetween_precision);
+}
+globalThis.easeFunc = function(easing, t, b, c, d, flip, param)
+{
+  var ret_ease = 0;
+  switch (easing) {
+	case 0:		// linear
+		ret_ease = c*t/d + b;
+    break;
+	case 1:		// easeInQuad
+		ret_ease = c*(t/=d)*t + b;
+    break;
+	case 2:		// easeOutQuad
+		ret_ease = -c *(t/=d)*(t-2) + b;
+    break;
+	case 3:		// easeInOutQuad
+		if ((t/=d/2) < 1) 
+      ret_ease = c/2*t*t + b
+    else
+		  ret_ease = -c/2 * ((--t)*(t-2) - 1) + b;
+    break;
+	case 4:		// easeInCubic
+		ret_ease = c*(t/=d)*t*t + b;
+    break;
+	case 5:		// easeOutCubic
+		ret_ease = c*((t=t/d-1)*t*t + 1) + b;
+    break;
+	case 6:		// easeInOutCubic
+		if ((t/=d/2) < 1) 
+			ret_ease = c/2*t*t*t + b
+    else
+		  ret_ease = c/2*((t-=2)*t*t + 2) + b;
+    break;
+	case 7:		// easeInQuart
+		ret_ease = c*(t/=d)*t*t*t + b;
+    break;
+	case 8:		// easeOutQuart
+		ret_ease = -c * ((t=t/d-1)*t*t*t - 1) + b;
+    break;
+	case 9:		// easeInOutQuart
+		if ((t/=d/2) < 1) 
+      ret_ease = c/2*t*t*t*t + b
+    else
+		  ret_ease = -c/2 * ((t-=2)*t*t*t - 2) + b;
+    break;
+	case 10:		// easeInQuint
+		ret_ease = c*(t/=d)*t*t*t*t + b;
+    break;
+	case 11:		// easeOutQuint
+		ret_ease = c*((t=t/d-1)*t*t*t*t + 1) + b;
+    break;
+	case 12:		// easeInOutQuint
+		if ((t/=d/2) < 1) 
+      ret_ease = c/2*t*t*t*t*t + b
+    else
+		  ret_ease = c/2*((t-=2)*t*t*t*t + 2) + b;
+    break;
+	case 13:		// easeInCircle
+    if (param.optimized) {
+		  ret_ease = easeInCircle[integerize(t,d)];
+    } else {
+      ret_ease = -(Math.sqrt(1-t*t) - 1);
+    }
+    break;
+	case 14:		// easeOutCircle
+    if (param.optimized) {
+  		ret_ease = easeOutCircle[integerize(t,d)];
+    } else {
+      ret_ease = Math.sqrt(1 - ((t-1)*(t-1)));
+    }
+    break;
+	case 15:		// easeInOutCircle
+    if (param.optimized) {
+  		ret_ease = easeInOutCircle[integerize(t,d)];
+    } else {
+  		if ((t/=d/2) < 1) ret_ease = -c/2 * (Math.sqrt(1 - t*t) - 1) + b
+      else ret_ease = c/2 * (Math.sqrt(1 - (t-=2)*t) + 1) + b;
+    } 
+    break;
+	case 16:		// easeInBack
+    if (param.optimized) {
+		  ret_ease = easeInBack[integerize(t,d)];
+    } else {
+  		var s = param.s;
+	  	ret_ease = c*(t/=d)*t*((s+1)*t - s) + b;
+    }
+    break;
+	case 17:		// easeOutBack
+    if (param.optimized) {
+		  ret_ease = easeOutBack[integerize(t,d)];
+    } else {
+   		var s = param.s;
+	  	ret_ease = c*((t=t/d-1)*t*((s+1)*t + s) + 1) + b;
+    }
+    break;
+	case 18:		// easeInOutBack
+    if (param.optimized) {
+		  ret_ease = easeInOutBack[integerize(t,d)];
+    } else {
+      var s = param.s
+  		if ((t/=d/2) < 1) 
+        ret_ease = c/2*(t*t*(((s*=(1.525))+1)*t - s)) + b
+      else
+  		  ret_ease = c/2*((t-=2)*t*(((s*=(1.525))+1)*t + s) + 2) + b;
+    }
+    break;
+	case 19:	//easeInElastic
+    if (param.optimized) {
+  		ret_ease = easeInElasticArray[integerize(t, d)];
+    } else {
+      var a = param.a;
+      var p = param.p;
+      var s = 0;
+      if (t==0) ret_ease = b; if ((t/=d)==1) ret_ease = b+c; 
+      if (p==0) p=d*.3;	if (a==0 || a < Math.abs(c)) { a=c; s=p/4; }
+      else var s = p/(2*Math.PI) * Math.asin (c/a);
+  		ret_ease = -(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b;
+    }
+    break;
+	case 20:	//easeOutElastic
+    if (param.optimized) {
+      ret_ease = easeOutElasticArray[integerize(t,d)];
+    } else {
+      var a = param.a;
+      var p = param.p;
+      var s = 0;
+  		if (t==0) ret_ease= b;  if ((t/=d)==1) ret_ease= b+c;  if (p == 0) p=d*.3;
+  		if (a==0 || a < Math.abs(c)) { a=c; var s=p/4; }
+  		else var s = p/(2*Math.PI) * Math.asin (c/a);
+  		ret_ease= (a*Math.pow(2,-10*t) * Math.sin( (t*d-s)*(2*Math.PI)/p ) + c + b);
+    }
+    break;
+	case 21:	//easeInOutElastic
+    if (param.optimized) {
+      ret_ease = easeInOutElasticArray[integerize(t,d)];
+    } else {
+      var a = param.a;
+      var p = param.p;
+      var s = 0;
+  		if (t==0) ret_ease = b; 
+  		if ((t/=d/2)==2) ret_ease = b+c;  
+  		if (p==0) p=d*(.3*1.5);
+  		if (a==0 || a < Math.abs(c)) { a=c; var s=p/4; }
+  		else var s = p/(2*Math.PI) * Math.asin (c/a);
+  		if (t < 1) 
+        ret_ease = -.5*(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b
+      else
+  		  ret_ease = a*Math.pow(2,-10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )*.5 + c + b;
+    }
+    break;
+	case 22:	//easeInBounce
+    if (param.optimized) {
+  		ret_ease = c - easeOutBounceArray[integerize(d-t, d)] + b;
+    } else {
+  		ret_ease = c - easeOutBouncefunc(d-t/d) + b;
+    }
+    break;
+	case 23:	//easeOutBounce
+    if (param.optimized) {
+  		ret_ease = easeOutBounceArray[integerize(t, d)];
+    } else {
+  		ret_ease = easeOutBouncefunc(t/d);
+    }
+    break;
+	case 24:	//easeInOutBounce
+    if (param.optimized) {
+  		if (t < d/2) 
+        ret_ease = (c - easeOutBounceArray[integerize(d-(t*2), d)] + b) * 0.5 +b;
+  		else 
+        ret_ease = easeOutBounceArray[integerize(t*2-d, d)] * .5 + c*.5 + b;
+    } else {
+  		if (t < d/2) 
+        ret_ease = (c - easeOutBouncefunc(d-(t*2)) + b) * 0.5 +b;
+  		else 
+        ret_ease = easeOutBouncefunc((t*2-d)/d) * .5 + c *.5 + b;
+    }
+    break;
+	case 25:	//easeInSmoothstep
+		var mt = (t/d) / 2;
+		ret_ease = (2*(mt * mt * (3 - 2*mt)));
+    break;
+	case 26:	//easeOutSmoothstep
+		var mt = ((t/d) + 1) / 2;
+		ret_ease = ((2*(mt * mt * (3 - 2*mt))) - 1);
+    break;
+	case 27:	//easeInOutSmoothstep
+		var mt = (t / d);
+		ret_ease = (mt * mt * (3 - 2*mt));
+    break;
+	};
+	
+  if (flip)
+    return (c - b) - ret_ease
+  else
+    return ret_ease;
+};
+(globalThis.preCalculateArray = function() {
+  var d = 1.0;
+  var b = 0.0;
+  var c = 1.0;
+  var result = 0.0;
+  var a = 0.0;
+  var p = 0.0;
+  var t = 0.0;
+  var s = 0.0;
 
+  for (var ti = 0; ti <= litetween_precision; ti++) {
+    t = ti/litetween_precision; 
+  	if ((t/=d) < (1/2.75)) {
+  		result = c*(7.5625*t*t) + b;
+  	} else if (t < (2/2.75)) {
+  		result = c*(7.5625*(t-=(1.5/2.75))*t + .75) + b;
+  	} else if (t < (2.5/2.75)) {
+  		result = c*(7.5625*(t-=(2.25/2.75))*t + .9375) + b;
+  	} else {
+  		result = c*(7.5625*(t-=(2.625/2.75))*t + .984375) + b;
+  	}		
+    easeOutBounceArray[ti] = result;
+
+    t = ti/litetween_precision; a = 0; p = 0;
+    if (t==0) result = b; if ((t/=d)==1) result = b+c; 
+    if (p==0) p=d*.3;	if (a==0 || a < Math.abs(c)) { a=c; var s=p/4; }
+    else var s = p/(2*Math.PI) * Math.asin (c/a);
+		result = -(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b;
+    easeInElasticArray[ti] = result;
+
+    t = ti/litetween_precision; a = 0; p = 0;
+		if (t==0) result= b;  if ((t/=d)==1) result= b+c;  if (p == 0) p=d*.3;
+		if (a==0 || a < Math.abs(c)) { a=c; var s=p/4; }
+		else var s = p/(2*Math.PI) * Math.asin (c/a);
+		result= (a*Math.pow(2,-10*t) * Math.sin( (t*d-s)*(2*Math.PI)/p ) + c + b);
+    easeOutElasticArray[ti] = result;
+
+    t = ti/litetween_precision; a = 0; p = 0;
+		if (t==0) result = b; 
+		if ((t/=d/2)==2) result = b+c;  
+		if (p==0) p=d*(.3*1.5);
+		if (a==0 || a < Math.abs(c)) { a=c; var s=p/4; }
+		else var s = p/(2*Math.PI) * Math.asin (c/a);
+		if (t < 1) 
+      result = -.5*(a*Math.pow(2,10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )) + b
+    else
+		  result = a*Math.pow(2,-10*(t-=1)) * Math.sin( (t*d-s)*(2*Math.PI)/p )*.5 + c + b;
+    easeInOutElasticArray[ti] = result;
+    
+    t = ti/litetween_precision; easeInCircle[ti] = -(Math.sqrt(1-t*t) - 1);
+    t = ti/litetween_precision; easeOutCircle[ti] = Math.sqrt(1 - ((t-1)*(t-1)));
+
+    t = ti/litetween_precision; 
+		if ((t/=d/2) < 1) result = -c/2 * (Math.sqrt(1 - t*t) - 1) + b
+    else result = c/2 * (Math.sqrt(1 - (t-=2)*t) + 1) + b;
+    easeInOutCircle[ti] = result;
+
+    t = ti/litetween_precision; s = 0;
+		if (s==0) s = 1.70158;
+		result = c*(t/=d)*t*((s+1)*t - s) + b;
+    easeInBack[ti] = result;
+
+    t = ti/litetween_precision; s = 0;
+		if (s==0) s = 1.70158;
+		result = c*((t=t/d-1)*t*((s+1)*t + s) + 1) + b;
+    easeOutBack[ti] = result;
+
+    t = ti/litetween_precision; s = 0; if (s==0) s = 1.70158;
+		if ((t/=d/2) < 1) 
+      result = c/2*(t*t*(((s*=(1.525))+1)*t - s)) + b
+    else
+		  result = c/2*((t-=2)*t*(((s*=(1.525))+1)*t + s) + 2) + b;
+    easeInOutBack[ti] = result;
+	}	
+}());
+globalThis.TweenObject = function() 
+{
+	var constructor = function (tname, tweened, easefunc, initial, target, duration, enforce) 
+	{
+		//0=Position|1=Size|2=Width|3=Height|4=Angle|5=Opacity|6=Value only
+    //state -> 0=paused | 1=playing | 2=reversing | 3=seek only
+    this.name = tname;
+    this.value = 0; 
+    this.setInitial(initial);
+    this.setTarget(target);
+    this.easefunc = easefunc;
+    this.tweened = tweened;
+    this.duration = duration;
+    this.progress = 0;
+    this.state = 0;
+    this.onStart = false;
+    this.onEnd = false;
+    this.onReverseStart = false;
+    this.onReverseEnd = false;
+    this.lastKnownValue = 0; 
+    this.lastKnownValue2 = 0;
+    this.enforce = enforce; 
+    this.pingpong = 1.0;
+    this.flipEase = false;
+    this.easingparam = [];
+    this.lastState = 1;
+    for (var i=0; i<28; i++) {
+      this.easingparam[i] = {}; 
+      this.easingparam[i].a = 0.0;
+      this.easingparam[i].p = 0.0;
+      this.easingparam[i].t = 0.0;
+      this.easingparam[i].s = 0.0;
+      this.easingparam[i].optimized = true;
+    }
+	}
+	return constructor;
+}();
+(function () {
+	TweenObject.prototype = {};
+  TweenObject.prototype.flipTarget = function ()
+  {
+    var x1 = this.initialparam1;
+    var x2 = this.initialparam2;
+    this.initialparam1 = this.targetparam1; 
+    this.initialparam2 = this.targetparam2;
+    this.targetparam1 = x1;
+    this.targetparam2 = x2;
+    this.lastKnownValue = 0;
+    this.lastKnownValue2 = 0;
+  }
+  TweenObject.prototype.setInitial = function (initial)
+  {
+    this.initialparam1 = parseFloat(initial.split(",")[0]); 
+    this.initialparam2 = parseFloat(initial.split(",")[1]);
+		this.lastKnownValue = 0;
+		this.lastKnownValue2 = 0;
+  }
+  TweenObject.prototype.setTarget = function (target)
+  {
+    this.targetparam1 = parseFloat(target.split(",")[0]);
+    this.targetparam2 = parseFloat(target.split(",")[1]);
+    if (isNaN(this.targetparam2)) this.targetparam2 = this.targetparam1;
+  }
+  TweenObject.prototype.OnTick = function(dt) 
+  {
+    //stopped
+    if (this.state === 0) return -1.0;
+     
+    //if starting
+    if (this.state === 1) 
+      this.progress += dt;
+    
+    //if reversing
+    if (this.state === 2) 
+      this.progress -= dt;
+
+    //seek
+    if (this.state === 3) {
+      this.state = 0;
+    } 
+
+    //ping pong
+    if ((this.state === 4) || (this.state === 6)) {
+      this.progress += dt * this.pingpong;
+    } 
+
+    //loop
+    if (this.state === 5) {
+      this.progress += dt * this.pingpong;
+    } 
+
+    if (this.progress < 0) {
+      //it has reached negative timeline due to reversing, pausing
+      this.progress = 0;
+      //if it's ping pong, don't stop
+      if (this.state === 4) {
+        this.pingpong = 1;
+      } else if (this.state === 6) {
+        this.pingpong = 1;
+        this.flipEase = false;
+      } else {
+        this.state = 0;
+      }
+      this.onReverseEnd = true;
+      return 0.0;
+    } else if (this.progress > this.duration) {
+      //it has reached more than duration, pausing
+      this.progress = this.duration;
+      if (this.state === 4) {
+        this.pingpong = -1;
+      } else if (this.state === 6) {
+        this.pingpong = -1;
+        this.flipEase = true;
+      } else if (this.state === 5) {
+        this.progress = 0.0;
+      } else {
+        this.state = 0;
+      }
+      this.onEnd = true;
+      return 1.0;
+    } else {
+      if (this.flipEase) {
+        var factor = easeFunc(this.easefunc, this.duration - this.progress, 0, 1, this.duration, this.flipEase, this.easingparam[this.easefunc]);
+      } else {
+        var factor = easeFunc(this.easefunc, this.progress, 0, 1, this.duration, this.flipEase, this.easingparam[this.easefunc]);
+      }
+      return factor;
+    }
+  };  
+}());
+globalThis.trim = function(str) {
+    return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+}
+TweenObject.Load = function(rawObj, tname, tweened, easing, init, targ, duration, enforce){
+	var obj = new TweenObject(tname, tweened, easing, init, targ, duration, enforce);
+	for(var i in rawObj)
+	    obj[i] = rawObj[i];
+	return obj;
+};
+{
+	C3.Behaviors.lunarray_LiteTween = class lunarray_LiteTween extends C3.SDKBehaviorBase
+	{
+		constructor(opts)
+		{
+			super(opts);
+		}
+		Release()
+		{
+			super.Release();
+		}
+	};
+}
 }
 
 {
-'use strict';const C3=self.C3;C3.Behaviors.Tween.Type=class TweenType extends C3.SDKBehaviorTypeBase{constructor(behaviorType){super(behaviorType)}Release(){super.Release()}OnCreate(){}};
+"use strict";
 
+{
+	C3.Behaviors.lunarray_LiteTween.Type = class lunarray_LiteTweenType extends C3.SDKBehaviorTypeBase
+	{
+		constructor(behaviorType)
+		{
+			super(behaviorType);
+		}
+		Release()
+		{
+			super.Release();
+		}
+		OnCreate()
+		{}
+	};
+}
 }
 
 {
-'use strict';const C3=self.C3;const NAMESPACE=C3.Behaviors.Tween;const ENABLED=0;
-NAMESPACE.Instance=class TweenInstance extends C3.SDKBehaviorInstanceBase{constructor(behInst,properties){super(behInst);this._allowMultiple=false;this._enabled=true;if(properties){this._allowMultiple=false;this._enabled=!!properties[ENABLED]}this._activeTweens=new Map;this._disabledTweens=[];this._waitingForReleaseTweens=new Map;this._finishingTween=null;this._activeTweensJson=null;this._disabledTweensJson=null;this._waitingForReleaseTweensJson=null;this._finishingTweenName="";if(this._enabled)this._StartTicking2();
-this._afterLoad=e=>this._OnAfterLoad(e);this.GetRuntime().Dispatcher().addEventListener("afterload",this._afterLoad)}Release(){this.GetRuntime().Dispatcher().removeEventListener("afterload",this._afterLoad);this._afterLoad=null;if(this._finishingTween){this.ReleaseAndCompleteTween(this._finishingTween);this._finishingTween=null}this.ReleaseAndCompleteTweens();this._tweens=null;this.ClearDisabledList();this._disabledTweens=null;this._ReleaseWaitingTweens();this._waitingForReleaseTweens=null;super.Release()}SetEnabled(e){this._enabled=
-e;if(this._enabled)this._StartTicking2();else this._StopTicking2()}GetEnabled(){return this._enabled}AddToDisabledList(tween){this._disabledTweens.push(tween)}IsInDisabledList(tween){return this._disabledTweens.includes(tween)}ClearDisabledList(){C3.clearArray(this._disabledTweens)}GetFinishingTween(){return this._finishingTween}IsInstanceValid(){const inst=this.GetObjectInstance();if(!inst)return false;return!inst.IsDestroyed()}GetTween(tags,property,includeWaitingForRelease=false){const tweens=
-property?this.PropertyTweens(property,includeWaitingForRelease):this.AllTweens(includeWaitingForRelease);if(!tweens||!tweens.length)return;for(const tween of tweens)if(tween.HasTags(tags))return tween}GetTweenIncludingWaitingForRelease(tags,property){return this.GetTween(tags,property,true)}*GetTweens(tags,property,includeWaitingForRelease=false){const tweens=property?this.PropertyTweens(property,includeWaitingForRelease):this.AllTweens(includeWaitingForRelease);if(tweens&&tweens.length)for(const tween of tweens)if(tween.HasTags(tags))yield tween}*GetTweensIncludingWaitingForRelease(tags,
-property){yield*this.GetTweens(tags,property,true)}PropertyTweens(property,includeWaitingForRelease){if(includeWaitingForRelease){let active=this._activeTweens.get(property);let waitingForRelease=this._waitingForReleaseTweens.get(property);if(!active)active=[];if(!waitingForRelease)waitingForRelease=[];return active.concat(waitingForRelease).filter(t=>t)}else{let active=this._activeTweens.get(property);if(!active)active=[];return active.filter(t=>t)}}AllTweens(includeWaitingForRelease){if(includeWaitingForRelease){const active=
-[...this._activeTweens.values()].flat();const waitingForRelease=[...this._waitingForReleaseTweens.values()].flat();return active.concat(waitingForRelease).filter(t=>t)}else{const active=[...this._activeTweens.values()].flat();return active.filter(t=>t)}}AllTweensIncludingWaitingForRelease(){return this.AllTweens(true)}SaveToJson(){return{"s":false,"e":!!this._enabled,"at":this._SaveActiveTweensToJson(),"dt":this._SaveDisabledTweensToJson(),"wt":this._SaveWaitingForReleaseTweensToJson(),"ft":this._SaveFinishingTweenToJson()}}LoadFromJson(o){if(!o)return;
-this._activeTweensJson=o["at"];this._disabledTweensJson=o["dt"];this._waitingForReleaseTweensJson=o["wt"];this._finishingTweenName=o["ft"];this._allowMultiple=false;this._enabled=!!o["e"]}_OnAfterLoad(e){const timelineManager=this.GetRuntime().GetTimelineManager();this._PopulateTweenMap(this._activeTweensJson,this._activeTweens,timelineManager);if(this._disabledTweensJson){C3.clearArray(this._disabledTweens);for(const tweenName of this._disabledTweensJson)this._PopulateTweenArray(this._disabledTweens,
-tweenName,timelineManager)}this._PopulateTweenMap(this._waitingForReleaseTweensJson,this._waitingForReleaseTweens,timelineManager);this._finishingTween=this._GetTween(this._finishingTweenName,timelineManager);this._enabled?this._StartTicking2():this._StopTicking2()}_PopulateTweenMap(restoreJson,map,timelineManager){if(!restoreJson)return;for(const property in restoreJson){let tweens=map.get(property);tweens?C3.clearArray(tweens):tweens=[];const tweensJson=restoreJson[property];for(const tweenJson of tweensJson){const success=
-this._PopulateTweenArray(tweens,tweenJson["name"],timelineManager);if(!success){const tween=C3.Tween.Build({runtime:this.GetRuntime(),json:tweenJson});tween.AddCompletedCallback(tween=>this._FinishTriggers(tween));timelineManager.AddScheduledTimeline(tween);this._PopulateTweenArray(tweens,tween,timelineManager)}else this._LoadTweenFromJson(tweenJson["name"],tweenJson,timelineManager)}map.set(property,tweens)}}_GetTween(name,timelineManager){return timelineManager.GetScheduledOrPlayingTimelineByName(name)}_PopulateTweenArray(collection,
-tweenOrName,timelineManager){if(typeof tweenOrName==="string"){const tween=this._GetTween(tweenOrName,timelineManager);if(tween)return!!collection.push(tween)}else return!!collection.push(tweenOrName);return false}_LoadTweenFromJson(tweenOrName,tweenJson,timelineManager){if(typeof tweenOrName==="string"){const tween=this._GetTween(tweenOrName,timelineManager);if(tween)tween._LoadFromJson(tweenJson)}else tweenOrName._LoadFromJson(tweenJson)}_SaveActiveTweensToJson(){const ret={};for(const [property,
-tweens]of this._activeTweens)ret[property]=tweens.map(tween=>tween._SaveToJson());return ret}_SaveDisabledTweensToJson(){return this._disabledTweens.map(tween=>tween.GetName())}_SaveWaitingForReleaseTweensToJson(){const ret={};for(const [property,tweens]of this._waitingForReleaseTweens)ret[property]=tweens.map(tween=>tween._SaveToJson());return ret}_SaveFinishingTweenToJson(){return this._finishingTween?this._finishingTween.GetName():""}Tick2(){this._ReleaseWaitingTweens()}CreateTween(args){const propertyTracksConfig=
-NAMESPACE.Config.GetPropertyTracksConfig(args.property,args.startValue,args.endValue,args.ease,args.resultMode,this.GetObjectInstance());const tweenId=NAMESPACE.Maps.GetPropertyFromIndex(args.property);if(!NAMESPACE.Maps.IsValueId(tweenId))this.ReleaseTweens(args.property);const tween=C3.Tween.Build({runtime:this.GetRuntime(),id:tweenId,tags:args.tags,time:args.time,instance:this.GetObjectInstance(),releaseOnComplete:!!args.releaseOnComplete,loop:!!args.loop,pingPong:!!args.pingPong,initialValueMode:args.initialValueMode,
-propertyTracksConfig:propertyTracksConfig});tween.AddCompletedCallback(tween=>this._FinishTriggers(tween));this._AddTween(tween,args.property);return tween}ReleaseTween(tween,complete=false){const id=tween.GetId();if(this._activeTweens.has(id)){const tweenArray=this._activeTweens.get(id);if(tweenArray){const index=tweenArray.indexOf(tween);if(index!==-1)tweenArray.splice(index,1)}}if(tween.IsReleased())return;if(this._IsInWaitingList(tween))return;tween.Stop(complete);this._AddToWaitingList(tween)}ReleaseTweens(indexProperty,
-complete=false){if(C3.IsFiniteNumber(indexProperty)){const stringProperty=NAMESPACE.Maps.GetPropertyFromIndex(indexProperty);if(!this._activeTweens.has(stringProperty))return;const tweenArray=this._activeTweens.get(stringProperty);const finishingTween=this.GetFinishingTween();for(const tween of tweenArray){if(tween===finishingTween)continue;if(tween.IsReleased())continue;if(this._IsInWaitingList(tween))continue;tween.Stop(complete);tween.Release()}C3.clearArray(tweenArray)}else{const finishingTween=
-this.GetFinishingTween();for(const tween of this.AllTweens()){if(tween===finishingTween)continue;if(tween.IsReleased())continue;if(this._IsInWaitingList(tween))continue;tween.Stop(complete);tween.Release()}for(const property of this._activeTweens.keys()){C3.clearArray(this._activeTweens.get(property));this._activeTweens.delete(property)}this._activeTweens.clear()}}ReleaseAndCompleteTween(tween){this.ReleaseTween(tween,true)}ReleaseAndCompleteTweens(){this.ReleaseTweens(NaN,true)}GetPropertyValueByIndex(index){switch(index){case ENABLED:return this._enabled}}SetPropertyValueByIndex(index,
-value){switch(index){case ENABLED:this._enabled=!!value;break}}_GetBehaviorType(tween){const instance=tween.GetInstance();const behaviorInstances=instance.GetBehaviorInstances();for(const behaviorInstance of behaviorInstances){const behaviorType=behaviorInstance.GetBehaviorType();if(behaviorType.GetInstanceSdkCtor()===this.constructor)return behaviorType}}Trigger(method,runtime,inst,behaviorType){if(this._runtime)return super.Trigger(method);else return runtime.Trigger(method,inst,behaviorType)}_FinishTriggers(tween){this._finishingTween=
-tween;NAMESPACE.Cnds.SetFinishingTween(tween);let instance;let runtime;if(!this.GetRuntime()){instance=tween.GetInstance();if(!instance)return;if(instance&&instance.IsDestroyed())return;runtime=instance.GetRuntime();const behaviorType=this._GetBehaviorType(tween);this.Trigger(NAMESPACE.Cnds.OnTweensFinished,runtime,instance,behaviorType);this.Trigger(NAMESPACE.Cnds.OnAnyTweensFinished,runtime,instance,behaviorType);tween.Stop()}else{instance=this._inst;runtime=this._runtime;this.Trigger(NAMESPACE.Cnds.OnTweensFinished);
-this.Trigger(NAMESPACE.Cnds.OnAnyTweensFinished);this.ReleaseTween(tween)}this._finishingTween=null;NAMESPACE.Cnds.SetFinishingTween(null);if(tween.GetDestroyInstanceOnComplete())runtime.DestroyInstance(instance)}_AddTween(tween,indexProperty){const stringProperty=NAMESPACE.Maps.GetPropertyFromIndex(indexProperty);if(!this._activeTweens.has(stringProperty))this._activeTweens.set(stringProperty,[]);const tweenArray=this._activeTweens.get(stringProperty);tweenArray.push(tween)}_AddToWaitingList(tween){const id=
-tween.GetId();if(!this._waitingForReleaseTweens.has(id))this._waitingForReleaseTweens.set(id,[]);this._waitingForReleaseTweens.get(id).push(tween)}_IsInWaitingList(tween){const id=tween.GetId();if(!this._waitingForReleaseTweens.has(id))return false;return this._waitingForReleaseTweens.get(id).includes(tween)}_ReleaseWaitingTweens(){if(!this._waitingForReleaseTweens.size)return;for(const tweenArray of this._waitingForReleaseTweens.values()){for(const tween of tweenArray){if(tween.IsReleased())continue;
-tween.Release()}C3.clearArray(tweenArray)}this._waitingForReleaseTweens.clear()}};
+"use strict";
 
+{
+	C3.Behaviors.lunarray_LiteTween.Instance = class lunarray_LiteTweenInstance extends C3.SDKBehaviorInstanceBase
+	{
+		constructor(behInst, properties)
+		{
+			super(behInst);
+			this.i = 0;		// progress
+			this.inst = this._inst.GetWorldInfo() //this._inst;
+			if (properties)
+			{
+				//this._myProperty = properties[0];
+						// Load properties
+			    this.playmode = properties[0];
+			    this.active = (this.playmode == 1) || (this.playmode == 2) || (this.playmode == 3) || (this.playmode == 4);
+				this.tweened = properties[1]; // 0=Position|1=Size|2=Width|3=Height|4=Angle|5=Opacity|6=Value only|7=Horizontal|8=Vertical|9=Scale
+				this.easing = properties[2];
+				this.target = properties[3];
+				this.targetmode = properties[4];
+			    this.useCurrent = false;
+			    if (this.targetmode === 1) this.target = "relative("+this.target+")";
+				this.duration = properties[5];
+				this.enforce = (properties[6] === 1);
+			    this.value = 0;
+			    
+			    this.tween_list = {};
+			    this.addToTweenList("default", this.tweened, this.easing, "current", this.target, this.duration, this.enforce);
+			    
+			    if (properties[0] === 1) this.startTween(0)
+			    if (properties[0] === 2) this.startTween(2)
+			    if (properties[0] === 3) this.startTween(3)
+			    if (properties[0] === 4) this.startTween(4)
+			}
+			this._StartTicking();
+		}
+		Release()
+		{
+			super.Release();
+		}
+		SaveToJson()
+		{
+			var v = JSON.stringify(this.tween_list["default"]);
+			return {
+				"playmode": this.playmode,
+				"active": this.active,
+				"tweened": this.tweened,
+				"easing": this.easing,
+				"target": this.target,
+				"targetmode": this.targetmode,
+				"useCurrent": this.useCurrent,
+				"duration": this.duration,
+				"enforce": this.enforce,
+				"value": this.value,
+				"tweenlist": JSON.stringify(this.tween_list["default"])
+			};
+		}
+		LoadFromJson(o)
+		{
+	    	var x = JSON.parse(o["tweenlist"]);
+    		var tempObj = TweenObject.Load(x, x.name, x.tweened, x.easefunc, x.initialparam1+","+x.initialparam2, x.targetparam1+","+x.targetparam2, x.duration, x.enforce);
+			this.tween_list["default"] = tempObj;
+	  		this.playmode = o["playmode"];
+			this.active = o["active"];
+			this.movement = o["tweened"];
+			this.easing = o["easing"];
+			this.target = o["target"];
+			this.targetmode = o["targetmode"];
+			this.useCurrent = o["useCurrent"];
+			this.duration = o["duration"];
+			this.enforce = o["enforce"];
+			this.value = o["value"];
+		}
+		parseCurrent(tweened, parseText)
+		{
+			if (parseText === undefined) parseText = "current";
+			  var parsed = trim(parseText);
+			  parseText = trim(parseText);
+			  var value = this.value;
+			  if (parseText === "current") {
+			    switch (tweened) {
+			      case 0: parsed = this.inst.GetX() + "," + this.inst.GetY(); break;
+			      case 1: parsed = this.inst.GetWidth() + "," + this.inst.GetHeight(); break;
+			      case 2: parsed = this.inst.GetWidth() + "," + this.inst.GetHeight(); break;
+			      case 3: parsed = this.inst.GetWidth() + "," + this.inst.GetHeight(); break;
+			      case 4: parsed = C3.toDegrees(this.inst.GetAngle()) + "," + C3.toDegrees(this.inst.GetAngle()); break;
+			      case 5: parsed = (this.inst.GetOpacity()*100) + "," + (this.inst.GetOpacity()*100); break;
+			      case 6: parsed = value + "," + value; break;
+			      case 7: parsed = this.inst.GetX() + "," + this.inst.GetY(); break;
+			      case 8: parsed = this.inst.GetX() + "," + this.inst.GetY(); break;
+			      case 9:
+			      if (this._inst.GetSdkInstance() !== null)
+			        parsed = (this._inst.GetWorldInfo().GetWidth()/this._inst.GetSdkInstance().GetCurrentImageInfo().GetWidth()) + "," +(this._inst.GetWorldInfo().GetHeight()/this._inst.GetSdkInstance().GetCurrentImageInfo().GetHeight());
+		          else 
+		            parsed = "1,1"; 
+		          break;
+			      default:  break;
+			    }
+			  }
+			  if (parseText.substring(0,8) === "relative") {
+			    var param1 = parseText.match(/\((.*?)\)/);
+			    if (param1) {
+			      var relativex = parseFloat(param1[1].split(",")[0]);
+			      var relativey = parseFloat(param1[1].split(",")[1]);
+			    }
+			    if (isNaN(relativex)) relativex = 0; 
+			    if (isNaN(relativey)) relativey = 0; 
+			    switch (tweened) {
+			      case 0: parsed = (this.inst.GetX()+relativex) + "," + (this.inst.GetY()+relativey); break;
+			      case 1: parsed = (this.inst.GetWidth()+relativex) + "," + (this.inst.GetHeight()+relativey); break;
+			      case 2: parsed = (this.inst.GetWidth()+relativex) + "," + (this.inst.GetHeight()+relativey); break;
+			      case 3: parsed = (this.inst.GetWidth()+relativex) + "," + (this.inst.GetHeight()+relativey); break;
+			      case 4: parsed = (C3.toDegrees(this.inst.GetAngle())+relativex) + "," + (C3.toDegrees(this.inst.GetAngle())+relativey); break;
+			      case 5: parsed = (this.inst.GetOpacity()*100+relativex) + "," + (this.inst.GetOpacity()*100+relativey); break;
+			      case 6: parsed = value+relativex + "," + value+relativex; break;
+			      case 7: parsed = (this.inst.GetX()+relativex) + "," + (this.inst.GetY()); break;
+			      case 8: parsed = (this.inst.GetX()) + "," + (this.inst.GetY()+relativex); break;
+			      case 9: parsed = (relativex) + "," + (relativey); break;
+			      default:  break;
+			    }
+			  }
+			  return parsed;
+		}
+		addToTweenList(tname, tweened, easing, init, targ, duration, enforce)
+		{
+		    init = this.parseCurrent(tweened, init);
+		    targ = this.parseCurrent(tweened, targ);
+
+		    if (this.tween_list[tname] !== undefined) {
+		      delete this.tween_list[tname]
+		    } 
+		    this.tween_list[tname] = new TweenObject(tname, tweened, easing, init, targ, duration, enforce);
+		    this.tween_list[tname].dt = 0;
+		}
+		setProgressTo(mark)
+		{
+		    if (mark > 1.0) mark = 1.0;
+    		if (mark < 0.0) mark = 0.0;
+		    for (var i in this.tween_list) { 
+		      var inst = this.tween_list[i];
+		      inst.lastKnownValue = 0;
+		      inst.lastKnownValue2 = 0;
+		      inst.state = 3;
+		      inst.progress = mark * inst.duration;
+		      var factor = inst.OnTick(0);
+		      this.updateTween(inst, factor);
+   			}
+		}
+		startTween(startMode)
+		{
+			for (var i in this.tween_list) {
+		      var inst = this.tween_list[i];
+		      if (this.useCurrent) {
+		        var init = this.parseCurrent(inst.tweened, "current");
+		        var target = this.parseCurrent(inst.tweened, this.target);
+		        inst.setInitial(init);
+		        inst.setTarget(target);
+		      }
+		      if (startMode === 0) {
+		        inst.progress = 0.000001;
+		        inst.lastKnownValue = 0;
+		        inst.lastKnownValue2 = 0;
+		        inst.onStart = true;
+		        inst.state = 1;
+		      }
+		      if (startMode === 1) {
+		        inst.state = inst.lastState;
+		      }
+		      if ((startMode === 2) || (startMode === 4)) {
+		        inst.progress = 0.000001;
+		        inst.lastKnownValue = 0;
+		        inst.lastKnownValue2 = 0;
+		        inst.onStart = true;
+		        if (startMode == 2) inst.state = 4; //state ping pong
+		        if (startMode == 4) inst.state = 6; //state flip flop
+		      }
+		      if (startMode === 3) {
+		        inst.progress = 0.000001;
+		        inst.lastKnownValue = 0;
+		        inst.lastKnownValue2 = 0;
+		        inst.onStart = true;
+		        inst.state = 5;
+		      }
+	    	}	
+		}
+		stopTween(stopMode)
+		{
+	    	for (var i in this.tween_list) {
+	      		var inst = this.tween_list[i];
+		      if ((inst.state != 3) && (inst.state != 0)) //don't save paused/seek state
+		        inst.lastState = inst.state;
+		      if (stopMode === 1) inst.progress = 0.0; 
+		      if (stopMode === 2) inst.progress = inst.duration;
+		      inst.state = 3;
+		      var factor = inst.OnTick(0);
+		      this.updateTween(inst, factor);
+    		}
+		}
+		reverseTween(reverseMode)
+		{
+		    for (var i in this.tween_list) {
+		      var inst = this.tween_list[i];
+		      if (reverseMode === 1) {
+		        inst.progress = inst.duration;
+		        inst.lastKnownValue = 0;
+		        inst.lastKnownValue2 = 0;
+		        inst.onReverseStart = true;
+		      } 
+		      inst.state = 2;
+    		}
+		}
+		updateTween(inst, factor)
+		{
+			//var isMirrored = 1;
+		    //var isFlipped = 1;
+		    //if (this.inst.width < 0) isMirrored = -1; 
+		    //if (this.inst.height < 0) isFlipped = -1;
+		    if (inst.tweened === 0) {
+		      //if tweening position
+		    	if (inst.enforce) {
+		        	//enforce new coordinate
+			      	this.inst.SetX(inst.initialparam1 + (inst.targetparam1 - inst.initialparam1) * factor);
+		        	this.inst.SetY(inst.initialparam2 + (inst.targetparam2 - inst.initialparam2) * factor);
+		      	} 
+		      	else {
+		        	//compromise coordinate change
+		        	this.inst.SetX(this.inst.GetX()+((inst.targetparam1 - inst.initialparam1) * factor) - inst.lastKnownValue);
+		        	this.inst.SetY(this.inst.GetY()+((inst.targetparam2 - inst.initialparam2) * factor) - inst.lastKnownValue2);
+		        	inst.lastKnownValue = ((inst.targetparam1 - inst.initialparam1) * factor); 
+		        	inst.lastKnownValue2 = ((inst.targetparam2 - inst.initialparam2) * factor);
+		     	}
+		    } 
+		    else if (inst.tweened === 1) {
+		      //if tweening size
+	      		if (inst.enforce) {
+	  				this.inst.SetWidth((inst.initialparam1 + ((inst.targetparam1 - inst.initialparam1) * (factor))));
+		   			this.inst.SetHeight((inst.initialparam2 + ((inst.targetparam2 - inst.initialparam2) * (factor))));
+		      	} 
+		      	else {
+	       			this.inst.SetWidth(this.inst.GetWidth()+((inst.targetparam1 - inst.initialparam1) * factor) - inst.lastKnownValue);
+	      			this.inst.SetHeight(this.inst.GetHeight()+((inst.targetparam2 - inst.initialparam2) * factor) - inst.lastKnownValue2);
+	        		inst.lastKnownValue = ((inst.targetparam1 - inst.initialparam1) * factor); 
+	        		inst.lastKnownValue2 = ((inst.targetparam2 - inst.initialparam2) * factor); 
+		      	}
+		    } 
+		    else if (inst.tweened === 2) {
+		      //if tweening size width only
+	      		if (inst.enforce) {
+	  				this.inst.SetWidth((inst.initialparam1 + ((inst.targetparam1 - inst.initialparam1) * (factor))));
+		      	} 
+		      	else {
+	      			this.inst.SetWidth(this.inst.GetWidth()+((inst.targetparam1 - inst.initialparam1) * factor) - inst.lastKnownValue);
+	        		inst.lastKnownValue = ((inst.targetparam1 - inst.initialparam1) * factor); 
+		      	}
+		    } 
+		    else if (inst.tweened === 3) {
+		      //if tweening size height only
+	      		if (inst.enforce) {  
+		   			this.inst.SetHeight((inst.initialparam2 + ((inst.targetparam2 - inst.initialparam2) * (factor))));
+		      	} 
+	     	 	else {
+	      			this.inst.SetHeight(this.inst.GetHeight()+((inst.targetparam2 - inst.initialparam2) * factor) - inst.lastKnownValue2);
+	        		inst.lastKnownValue2 = ((inst.targetparam2 - inst.initialparam2) * factor); 
+		      	}
+		    } 
+		    else if (inst.tweened === 4) {
+		      //if tweening angle
+		      if (inst.enforce) {
+	  		  	var tangle = inst.initialparam1 + (inst.targetparam1 - inst.initialparam1) * factor;
+	  		 	this.inst.SetAngle(C3.clampAngle(C3.toRadians(tangle))) ;
+		      } 
+		      else {
+	  		  	var tangle = ((inst.targetparam1 - inst.initialparam1) * factor) - inst.lastKnownValue;
+	  		  	this.inst.SetAngle(C3.clampAngle(this.inst.angle + C3.toRadians(tangle)));
+	        	inst.lastKnownValue = (inst.targetparam1 - inst.initialparam1) * factor; 
+		      }
+		    } 
+		    else if (inst.tweened === 5) {
+		      //if tweening opacity
+		      if (inst.enforce) {
+		  		  this.inst.SetOpacity((inst.initialparam1 + (inst.targetparam1 - inst.initialparam1) * factor) / 100);
+		      } 
+		      else {
+		  		  this.inst.SetOpacity(this.inst.GetOpacity() + (((inst.targetparam1 - inst.initialparam1) * factor) - inst.lastKnownValue) / 100);
+		        inst.lastKnownValue = ((inst.targetparam1 - inst.initialparam1) * factor);
+		      }
+		    } 
+		    else if (inst.tweened === 6) {
+		      //if tweening value
+		      if (inst.enforce) {
+		  		  this.value = (inst.initialparam1 + (inst.targetparam1 - inst.initialparam1) * factor);
+		      } 
+		      else {
+		  		  this.value += (((inst.targetparam1 - inst.initialparam1) * factor) - inst.lastKnownValue);
+		        inst.lastKnownValue = ((inst.targetparam1 - inst.initialparam1) * factor);
+		      }
+		    } 
+		    else if (inst.tweened === 7) {
+		      //if tweening position X only
+		      if (inst.enforce) {
+		        //enforce new coordinate
+			      this.inst.SetX(inst.initialparam1 + (inst.targetparam1 - inst.initialparam1) * factor);
+		      } 
+		      else {
+		        //compromise coordinate change
+		        this.inst.SetX(this.inst.GetX()+ ((inst.targetparam1 - inst.initialparam1) * factor) - inst.lastKnownValue);
+		        inst.lastKnownValue = ((inst.targetparam1 - inst.initialparam1) * factor); 
+		      }
+		    } 
+		    else if (inst.tweened === 8) {
+		      //if tweening position Y only
+		      if (inst.enforce) {
+		        //enforce new coordinate
+		        this.inst.SetY(inst.initialparam2 + (inst.targetparam2 - inst.initialparam2) * factor);
+		      } 
+		      else {
+		        //compromise coordinate change
+		        this.inst.SetY(this.inst.GetY()+ ((inst.targetparam2 - inst.initialparam2) * factor) - inst.lastKnownValue2);
+		        inst.lastKnownValue2 = ((inst.targetparam2 - inst.initialparam2) * factor);
+		      }
+		    } 
+		    else if (inst.tweened === 9) {
+		      //if tweening scale
+		      var scalex = inst.initialparam1 + (inst.targetparam1 - inst.initialparam1) * factor;
+		      var scaley = inst.initialparam2 + (inst.targetparam2 - inst.initialparam2) * factor;
+		      if (this.inst.GetWidth() < 0) scalex = inst.initialparam1 + (inst.targetparam1 + inst.initialparam1) * -factor;
+		      if (this.inst.GetHeight() < 0)  scaley = inst.initialparam2 + (inst.targetparam2 + inst.initialparam2) * -factor;
+		      if (inst.enforce) {
+		       this.inst.SetWidth(this._inst.GetWorldInfo().GetInstance().GetCurrentImageInfo().GetWidth() * scalex);
+		       this.inst.SetHeight(this._inst.GetWorldInfo().GetInstance().GetCurrentImageInfo().GetHeight() * scaley);
+
+		      } 
+		      else {
+		        if (this.inst.GetWidth() < 0) { 
+		      	  this.inst.SetWidth(scalex * (this.inst.GetWidth() / (-1+inst.lastKnownValue))); 
+		          inst.lastKnownValue = scalex + 1 
+		        } 
+		        else { 
+		      	  this.inst.SetWidth(scalex * (this.inst.GetWidth() / (1+inst.lastKnownValue))); 
+		          inst.lastKnownValue = scalex - 1;
+		        }
+		        if (this.inst.GetHeight() < 0) {
+		          this.inst.SetHeight(scaley * (this.inst.GetHeight() / (-1+inst.lastKnownValue2)));
+		          inst.lastKnownValue2 = scaley + 1 
+		        } 
+		        else {
+		          this.inst.SetHeight(scaley * (this.inst.GetHeight() / (1+inst.lastKnownValue2)));
+		          inst.lastKnownValue2 = scaley - 1;
+		        } 
+		      }
+		    }
+
+		    this.inst.SetBboxChanged();
+		}
+		Tick()
+		{
+			const dt = this._runtime.GetDt(this._inst);
+			const wi = this._inst.GetWorldInfo();
+			// ... code to run every tick for this behavior ...
+			var inst = this.tween_list["default"];
+
+		    if (inst.state !== 0) {
+		      if (inst.onStart) {
+					this.Trigger(C3.Behaviors.lunarray_LiteTween.Cnds.OnStart, this.inst);
+		        	inst.onStart = false;
+		      	}
+		  
+		      if (inst.onReverseStart) {
+		  		  this.Trigger(C3.Behaviors.lunarray_LiteTween.Cnds.OnReverseStart, this.inst);
+		        inst.onReverseStart = false;
+		      }
+
+		      this.active = (inst.state == 1) || (inst.state == 2) || (inst.state == 4) || (inst.state == 5) || (inst.state == 6);
+		      var factor = inst.OnTick(dt);
+		      this.updateTween(inst, factor);
+
+		      if (inst.onEnd) {
+		  		  this.Trigger(C3.Behaviors.lunarray_LiteTween.Cnds.OnEnd, this.inst);
+		        inst.onEnd = false;
+		      }
+		  
+		      if (inst.onReverseEnd) {
+		  		  this.Trigger(C3.Behaviors.lunarray_LiteTween.Cnds.OnReverseEnd, this.inst);
+		        inst.onReverseEnd = false;
+		      }
+		  	}
+		}
+	};
+}
 }
 
 {
-'use strict';const C3=self.C3;let finishingTween=null;
-C3.Behaviors.Tween.Cnds={SetFinishingTween(tween){finishingTween=tween},OnTweensFinished(tags){return finishingTween.HasTags(tags)},OnAnyTweensFinished(){return true},IsPlaying(tags){const tweens=[...this.GetTweensIncludingWaitingForRelease(tags)];if(!tweens)return false;if(!tweens.length)return false;return tweens.some(C3.Tween.IsPlaying)},IsAnyPlaying(){const tweens=[...this.AllTweensIncludingWaitingForRelease()];if(!tweens)return false;if(!tweens.length)return false;return tweens.some(C3.Tween.IsPlaying)},
-IsPaused(tags){const tweens=[...this.GetTweensIncludingWaitingForRelease(tags)];if(!tweens)return false;if(!tweens.length)return false;return tweens.some(C3.Tween.IsPaused)},IsAnyPaused(){const tweens=[...this.AllTweensIncludingWaitingForRelease()];if(!tweens)return false;if(!tweens.length)return false;return tweens.some(C3.Tween.IsPaused)}};
+"use strict";
 
+{
+	C3.Behaviors.lunarray_LiteTween.Cnds =
+	{
+		IsActive()
+		{
+			return (this.tween_list["default"].state !== 0);
+		},
+		IsReversing()
+		{
+			return (this.tween_list["default"].state == 2);
+		},
+		CompareProgress(cmp, v)
+		{
+			var inst = this.tween_list["default"];
+			return do_cmp((inst.progress / inst.duration), cmp, v);
+		},
+		OnThreshold(cmp, v)
+		{
+			var inst = this.tween_list["default"];
+			this.threshold = (do_cmp((inst.progress / inst.duration), cmp, v)); 
+			var ret = (this.oldthreshold != this.threshold) && (this.threshold); 
+			if (ret) { 
+			  this.oldthreshold = this.threshold;
+			}
+				return ret;
+		},
+		OnStart()
+		{
+			if (this.tween_list["default"] === undefined) 
+ 			return false;
+			return this.tween_list["default"].onStart;  
+		},
+		OnReverseStart()
+		{
+			if (this.tween_list["default"] === undefined) 
+  			return false;
+			return this.tween_list["default"].onReverseStart; 
+		},
+		OnEnd()
+		{
+			if (this.tween_list["default"] === undefined) 
+  			return false;
+			return this.tween_list["default"].onEnd; 
+		},
+		OnReverseEnd()
+		{
+			if (this.tween_list["default"] === undefined) 
+  			return false;
+			return this.tween_list["default"].onReverseEnd;    
+		}
+	};
+}
 }
 
 {
-'use strict';const C3=self.C3;const Ease=self.Ease;const NAMESPACE=C3.Behaviors.Tween;
-NAMESPACE.Acts={SetEnabled(enable){this.SetEnabled(!!enable);for(const tween of this.AllTweens())if(!!enable){if(this.IsInDisabledList(tween))tween.Resume()}else{if(tween.IsPlaying()||tween.IsScheduled())this.AddToDisabledList(tween);tween.Stop()}if(enable)this.ClearDisabledList()},async TweenOneProperty(...args){if(!this.GetEnabled()||!this.IsInstanceValid())return;const tween=this.CreateTween(NAMESPACE.TweenArguments.OneProperty(this,...args));if(tween.Play())await tween.GetPlayPromise()},async TweenTwoProperties(...args){if(!this.GetEnabled()||
-!this.IsInstanceValid())return;const tween=this.CreateTween(NAMESPACE.TweenArguments.TwoProperties(this,...args));if(tween.Play())await tween.GetPlayPromise()},async TweenValue(...args){if(!this.GetEnabled()||!this.IsInstanceValid())return;const tween=this.CreateTween(NAMESPACE.TweenArguments.ValueProperty(this,...args));if(tween.Play())await tween.GetPlayPromise()},PauseTweens(tags){if(!this.GetEnabled()||!this.IsInstanceValid())return;for(const tween of this.GetTweens(tags))tween.Stop()},PauseAllTweens(){if(!this.GetEnabled()||
-!this.IsInstanceValid())return;for(const tween of this.AllTweens())tween.Stop()},ResumeTweens(tags){if(!this.GetEnabled()||!this.IsInstanceValid())return;for(const tween of this.GetTweens(tags))tween.Resume()},ResumeAllTweens(){if(!this.GetEnabled()||!this.IsInstanceValid())return;for(const tween of this.AllTweens())tween.Resume()},StopTweens(tags){if(!this.GetEnabled()||!this.IsInstanceValid())return;for(const tween of this.GetTweens(tags))this.ReleaseTween(tween)},StopAllTweens(){if(!this.GetEnabled()||
-!this.IsInstanceValid())return;for(const tween of this.AllTweens())this.ReleaseTween(tween)},SetOnePropertyTweensEndValue(tags,property,endValue){if(!this.GetEnabled()||!this.IsInstanceValid())return;const propertyName=C3.Behaviors.Tween.Maps.GetSinglePropertyFromIndex(property);for(const tween of this.GetTweens(tags)){tween.BeforeSetEndValues([propertyName]);tween.SetEndValue(endValue,propertyName)}},SetTwoPropertiesTweensEndValue(tags,property,endValueX,endValueY){if(!this.GetEnabled()||!this.IsInstanceValid())return;
-const properties=C3.Behaviors.Tween.Maps.GetRealProperties(property);for(const tween of this.GetTweens(tags)){tween.BeforeSetEndValues(properties);tween.SetEndValue(endValueX,properties[0]);tween.SetEndValue(endValueY,properties[1])}},SetValuePropertyTweensStartValue(tags,startValue){if(!this.GetEnabled()||!this.IsInstanceValid())return;for(const tween of this.GetTweens(tags,"value"))tween.SetStartValue(startValue,"value")},SetValuePropertyTweensEndValue(tags,endValue){if(!this.GetEnabled()||!this.IsInstanceValid())return;
-for(const tween of this.GetTweens(tags,"value")){tween.BeforeSetEndValues(["value"]);tween.SetEndValue(endValue,"value")}},SetTweensEase(tags,easeIndex){if(!this.GetEnabled()||!this.IsInstanceValid())return;const ease=Ease.GetEaseFromIndex(easeIndex);for(const tween of this.GetTweens(tags))tween.SetEase(ease)},SetAllTweensEase(easeIndex){if(!this.GetEnabled()||!this.IsInstanceValid())return;const ease=Ease.GetEaseFromIndex(easeIndex);for(const tween of this.AllTweens())tween.SetEase(ease)},SetTweensTime(tags,
-time){if(!this.GetEnabled()||!this.IsInstanceValid())return;for(const tween of this.GetTweens(tags))tween.SetTime(time)},SetAllTweensTime(time){if(!this.GetEnabled()||!this.IsInstanceValid())return;for(const tween of this.AllTweens())tween.SetTime(time)},SetTweensPlaybackRate(tags,rate){if(!this.GetEnabled()||!this.IsInstanceValid())return;for(const tween of this.GetTweens(tags))tween.SetPlaybackRate(rate)},SetAllTweensPlaybackRate(rate){if(!this.GetEnabled()||!this.IsInstanceValid())return;for(const tween of this.AllTweens())tween.SetPlaybackRate(rate)},
-SetTweensDestroyOnComplete(tags,destroyOnComplete){if(!this.GetEnabled()||!this.IsInstanceValid())return;for(const tween of this.GetTweens(tags))tween.SetDestroyInstanceOnComplete(!!destroyOnComplete)},SetAllTweensDestroyOnComplete(destroyOnComplete){if(!this.GetEnabled()||!this.IsInstanceValid())return;for(const tween of this.AllTweens())tween.SetDestroyInstanceOnComplete(!!destroyOnComplete)}};
+"use strict";
 
+{
+	C3.Behaviors.lunarray_LiteTween.Acts =
+	{
+		Start(startmode, current)
+		{
+	   	 	this.threshold = false;
+   			this.oldthreshold = false;
+    		this.useCurrent = (current == 1);
+    		this.startTween(startmode);
+		},
+		Stop(stopmode)
+		{
+			this.stopTween(stopmode);
+		},
+		Reverse(revMode)
+		{
+		    this.threshold = false;
+		    this.oldthreshold = false;
+		    this.reverseTween(revMode);
+		},
+		ProgressTo(progress)
+		{
+			this.setProgressTo(progress);
+		},
+		SetDuration(x)
+		{
+			if (isNaN(x)) return;
+		 	if (x < 0) return;
+    		if (this.tween_list["default"] === undefined) return;
+			this.tween_list["default"].duration = x;
+		},
+		SetEnforce(x)
+		{
+		    if (this.tween_list["default"] === undefined) return;
+			this.tween_list["default"].enforce = (x===1);
+		},
+		SetInitial(x)
+		{
+	    	if (this.tween_list["default"] === undefined) return;
+	    	var init = this.parseCurrent(this.tween_list["default"].tweened, x);
+			this.tween_list["default"].setInitial(init);
+		},
+		SetTarget(targettype, absrel, x)
+		{
+		    if (this.tween_list["default"] === undefined) return;
+		    if (isNaN(x)) return;
+		    var inst = this.tween_list["default"];
+		    var parsed = x + "";
+		    this.targetmode = absrel;
+		    var x1 = "";
+		    var x2 = "";
+		    if (absrel === 1) {
+		      //relative
+		      this.target = "relative(" + parsed + ")";
+		      switch (targettype) {
+		        case 0: x1 = (this.inst.GetX() + x); x2 = inst.targetparam2; break;
+		        case 1: x1 = inst.targetparam1; x2 = (this.inst.GetY() + x); break;
+		        case 2: x1 = "" + C3.toDegrees(this.inst.GetAngle() + C3.toRadians(x)); x2 = x1; break; //angle
+		        case 3: x1 = "" + (this.inst.GetOpacity()*100) + x; x2 = x1; break; //opacity
+		        case 4: x1 = (this.inst.GetWidth() + x); x2 = inst.targetparam2; break; //width
+		        case 5: x1 = inst.targetparam1; x2 = (this.inst.GetHeight() + x); break; //height
+		        case 6: x1 = x; x2 = x; break; //value
+		        default:  break;
+		      }
+		      parsed = x1 + "," + x2;
+		    } else {
+		      switch (targettype) {
+		        case 0: x1 = x; x2 = inst.targetparam2; break;
+		        case 1: x1 = inst.targetparam1; x2 = x; break;
+		        case 2: x1 = x; x2 = x; break; //angle
+		        case 3: x1 = x; x2 = x; break; //opacity
+		        case 4: x1 = x; x2 = inst.targetparam2; break; //width
+		        case 5: x1 = inst.targetparam1; x2 = x; break; //height
+		        case 6: x1 = x; x2 = x; break; //value
+		        default:  break;
+		      }
+		      parsed = x1 + "," + x2;
+		      this.target = parsed;
+		    }
+		    var init = this.parseCurrent(this.tween_list["default"].tweened, "current");
+		    var targ = this.parseCurrent(this.tween_list["default"].tweened, parsed);
+		 		inst.setInitial(init);
+		 		inst.setTarget(targ);
+		},
+		SetTweenedProperty(x)
+		{
+	    	if (this.tween_list["default"] === undefined) return;
+			this.tween_list["default"].tweened = x;
+		},
+		SetEasing(x)
+		{
+	    	if (this.tween_list["default"] === undefined) return;
+			this.tween_list["default"].easefunc = x;
+		},
+	 	SetEasingParam(x, a, p, t, s)
+		{
+		    if (this.tween_list["default"] === undefined) return;
+		    this.tween_list["default"].easingparam[x].optimized = false;
+			this.tween_list["default"].easingparam[x].a = a;
+			this.tween_list["default"].easingparam[x].p = p;
+			this.tween_list["default"].easingparam[x].t = t;
+			this.tween_list["default"].easingparam[x].s = s;
+		},
+	 	ResetEasingParam()
+		{
+    		if (this.tween_list["default"] === undefined) return;
+    		this.tween_list["default"].optimized = true;
+		},
+	 	SetValue(x)
+		{
+    		var inst = this.tween_list["default"];
+			this.value = x;
+    		if (inst.tweened === 6)
+      		inst.setInitial( this.parseCurrent(inst.tweened, "current") );
+		},
+		SetParameter(tweened, easefunction, target, duration, enforce)
+		{
+	    	if (this.tween_list["default"] === undefined) {
+	      		this.addToTweenList("default", tweened, easefunction, initial, target, duration, enforce, 0);
+	    	} 
+	    	else {
+		      var inst = this.tween_list["default"];
+		      inst.tweened = tweened; 
+		  		inst.easefunc = easefunction;
+		      inst.setInitial( this.parseCurrent(tweened, "current") );
+		      inst.setTarget( this.parseCurrent(tweened, target) );
+		      inst.duration = duration; 
+		      inst.enforce = (enforce === 1); 
+	   		 }
+		}
+	};
+}
 }
 
 {
-'use strict';const C3=self.C3;
-C3.Behaviors.Tween.Exps={Time(tags){const tween=this.GetTweenIncludingWaitingForRelease(tags);if(!tween)return 0;return tween.GetTime()},Progress(tags){const tween=this.GetTweenIncludingWaitingForRelease(tags);if(!tween)return 0;return tween.GetTime()/tween.GetTotalTime()},Value(tags){const tween=this.GetTweenIncludingWaitingForRelease(tags,"value");if(!tween)return 0;return tween.GetPropertyTrack("value").GetSourceAdapterValue()},Tags(){if(!this.GetFinishingTween())return"";return this.GetFinishingTween().GetStringTags()}};
-
-}
+"use strict";
 
 {
-'use strict';const C3=self.C3;const Ease=self.Ease;const PAIR_PROPERTIES=["position","size","scale"];const SINGLE_PROPERTIES=["offsetX","offsetY","offsetWidth","offsetHeight","offsetAngle","offsetOpacity","offsetColor","offsetZElevation","offsetScaleX","offsetScaleY"];const VALUE_PROPERTIES=["value"];const PROPERTY_INDEX_TO_NAME=[].concat(PAIR_PROPERTIES).concat(SINGLE_PROPERTIES).concat(VALUE_PROPERTIES);
-const PROPERTY_PAIR_TO_REAL_PROPERTIES={"position":["offsetX","offsetY"],"size":["offsetWidth","offsetHeight"],"scale":["offsetScaleX","offsetScaleY"]};const ALL_REAL_PROPERTIES=Object.assign({},PROPERTY_INDEX_TO_NAME.reduce((o,key)=>Object.assign({},o,{[key]:[key]}),{}),PROPERTY_PAIR_TO_REAL_PROPERTIES);
-C3.Behaviors.Tween.Maps=class Maps{constructor(){}static GetEases(){return[...Ease.GetRuntimeEaseNames()]}static GetEaseFromIndex(index){return[...Ease.GetRuntimeEaseNames()][index]}static GetPropertyFromIndex(index){return PROPERTY_INDEX_TO_NAME[index]}static GetPropertyIndexFromName(name){return PROPERTY_INDEX_TO_NAME.indexOf(name)}static GetPairPropertyFromIndex(index){return PAIR_PROPERTIES[index]}static GetSinglePropertyFromIndex(index){return SINGLE_PROPERTIES[index]}static GetValuePropertyFromIndex(index){return VALUE_PROPERTIES[index]}static GetPairProperties(pairId){return PROPERTY_PAIR_TO_REAL_PROPERTIES[pairId]}static GetRealProperties(id){if(C3.IsString(id))return ALL_REAL_PROPERTIES[id];else return ALL_REAL_PROPERTIES[PROPERTY_INDEX_TO_NAME[id]]}static IsPairId(id){return!!PROPERTY_PAIR_TO_REAL_PROPERTIES[id]}static IsColorId(id){return id===
-"offsetColor"}static IsAngleId(id){return id==="offsetAngle"}static IsOpacityId(id){return id==="offsetOpacity"}static IsValueId(id){return id==="value"}};
-
+	C3.Behaviors.lunarray_LiteTween.Exps =
+	{
+		State()
+		{
+		    var parsed = "N/A"; 
+    		switch (this.tween_list["default"].state) {
+			  	case 0: parsed = "paused"; break;
+				case 1: parsed = "playing"; break;
+				case 2: parsed = "reversing"; break;
+				case 3: parsed = "seeking"; break;
+	      		default:  break;
+    		}
+    		return parsed;
+		},
+		Progress()
+		{
+    		var progress = this.tween_list["default"].progress/this.tween_list["default"].duration; 
+    		return progress;
+		},
+		Duration()
+		{
+    		return this.tween_list["default"].duration;
+		},
+		Target()
+		{
+		    var inst = this.tween_list["default"];
+		    var parsed = "N/A"; 
+		    switch (inst.tweened) {
+		      case 0: parsed = inst.targetparam1; break;
+		      case 1: parsed = inst.targetparam2; break;
+		      case 2: parsed = inst.targetparam1; break;
+		      case 3: parsed = inst.targetparam1; break;
+		      case 4: parsed = inst.targetparam1; break;
+		      case 5: parsed = inst.targetparam2; break;
+		      case 6: parsed = inst.targetparam1; break;
+		      default:  break;
+	    	}
+		    return parsed;
+		},
+		Value()
+		{
+   			var tval = this.value; 
+    		return tval;
+		},
+		Tween(a_, b_, x_, easefunc_)
+		{
+	    	var currX = (x_>1.0?1.0:x_);
+	    	var factor = easeFunc(easefunc_, currX<0.0?0.0:currX, 0.0, 1.0, 1.0, false, false);
+	   		 return a_ + factor * (b_-a_);
+		}
+	};
 }
-
-{
-'use strict';const C3=self.C3;const NAMESPACE=C3.Behaviors.Tween;const TWEEN_CONFIGURATIONS=new Map;
-NAMESPACE.Config=class Config{constructor(){}static GetPropertyTracksConfig(property,startValue,endValue,ease,resultMode,instance){if(TWEEN_CONFIGURATIONS.size===0)this._CreateConfigObjects();const propertyType=NAMESPACE.PropertyTypes.Pick(property);let config=TWEEN_CONFIGURATIONS.get(propertyType);if(C3.IsFiniteNumber(property))property=NAMESPACE.Maps.GetPropertyFromIndex(property);return this._GetConfig(config,property,startValue,endValue,ease,resultMode,instance)}static TransformValue(property,
-value){const configFunctionObject=C3.Behaviors.Tween.GetPropertyTracksConfig(property);return configFunctionObject.valueGetter(value)}static _CreateConfigObjects(){const types=NAMESPACE.PropertyTypes;const getters=NAMESPACE.ValueGetters;this._AddConfigObject(types.PAIR,this._GetPairConfig,getters._GetPropertyValue);this._AddConfigObject(types.COLOR,this._GetColorConfig,getters._GetColorPropertyValue);this._AddConfigObject(types.ANGLE,this._GetAngleConfig,getters._GetPropertyAngleValue);this._AddConfigObject(types.VALUE,
-this._GetValueConfig,getters._GetPropertyValue);this._AddConfigObject(types.OTHER,this._GetCommonConfig,getters._GetPropertyValue)}static _AddConfigObject(name,configGetter,valueGetter){TWEEN_CONFIGURATIONS.set(name,this._CreateConfigObject(name,configGetter,valueGetter))}static _CreateConfigObject(name,configFunc,valueGetter){return{name:name,configFunc:configFunc,valueGetter:valueGetter}}static _GetConfig(config,property,startValue,endValue,ease,resultMode,instance){return config.configFunc(property,
-config.valueGetter(startValue),config.valueGetter(endValue),ease,resultMode,instance)}static _GetPairConfig(property,startValues,endValues,ease,resultMode,instance){const properties=NAMESPACE.Maps.GetPairProperties(property);return properties.map((property,index)=>{return{sourceId:"world-instance",property:property,type:"float",valueType:"numeric",startValue:startValues[index],endValue:endValues[index],ease:NAMESPACE.Maps.GetEaseFromIndex(ease),resultMode:resultMode}})}static _GetColorConfig(property,
-startValue,endValue,ease,resultMode,instance){if(C3.Plugins.Text&&instance.GetPlugin()instanceof C3.Plugins.Text)return{sourceId:"plugin",sourceArgs:[7],property:"color",type:"color",valueType:"color",startValue:startValue,endValue:endValue,ease:NAMESPACE.Maps.GetEaseFromIndex(ease),resultMode:resultMode};else return{sourceId:"world-instance",property:property,type:"color",valueType:"color",startValue:startValue,endValue:endValue,ease:NAMESPACE.Maps.GetEaseFromIndex(ease),resultMode:resultMode}}static _GetAngleConfig(property,
-startValue,endValue,ease,resultMode,instance){return{sourceId:"world-instance",property:property,type:"angle",valueType:"angle",startValue:startValue,endValue:endValue,ease:NAMESPACE.Maps.GetEaseFromIndex(ease),resultMode:resultMode}}static _GetCommonConfig(property,startValue,endValue,ease,resultMode,instance){return{sourceId:"world-instance",property:property,type:"float",valueType:"numeric",startValue:startValue,endValue:endValue,ease:NAMESPACE.Maps.GetEaseFromIndex(ease),resultMode:resultMode}}static _GetValueConfig(property,
-startValue,endValue,ease,resultMode,instance){return{sourceId:"value",property:property,type:"float",valueType:"numeric",startValue:startValue,endValue:endValue,ease:NAMESPACE.Maps.GetEaseFromIndex(ease),resultMode:resultMode}}};
-
-}
-
-{
-'use strict';const C3=self.C3;const NAMESPACE=C3.Behaviors.Tween;const COMMON_FIXED_ARGS={resultMode:"absolute"};const COMMON_VARIABLE_ARGS=Object.assign({},COMMON_FIXED_ARGS,{tags:"",property:"",time:0,ease:0,releaseOnComplete:0,loop:false,pingPong:false});const ONE_PROPERTY_ARGS=Object.assign({},COMMON_VARIABLE_ARGS,{initialValueMode:"current-state",startValue:0,endValue:0});
-const TWO_PROPERTIES_ARGS=Object.assign({},COMMON_VARIABLE_ARGS,{initialValueMode:"current-state",startValue:[0,0],endValue:[0,0]});const COLOR_PROPERTY_ARGS=Object.assign({},COMMON_VARIABLE_ARGS,{initialValueMode:"current-state",startValue:[0,0,0],endValue:[0,0,0]});const VALUE_PROPERTY_ARGS=Object.assign({},ONE_PROPERTY_ARGS,{initialValueMode:"start-value"});const X=0;const Y=1;const R=0;const G=1;const B=2;
-NAMESPACE.TweenArguments=class TweenArguments{constructor(){}static _SetCommonProperties(argsObject,tags,time,ease,destroyOnComplete,loop,pingPong){argsObject.tags=tags;argsObject.time=time;argsObject.ease=ease;argsObject.releaseOnComplete=destroyOnComplete;argsObject.loop=loop;argsObject.pingPong=pingPong}static OneProperty(inst,tags,property,endValue,time,ease,destroyOnComplete,loop,pingPong){const propertyName=NAMESPACE.Maps.GetSinglePropertyFromIndex(property);const args=NAMESPACE.Maps.IsColorId(propertyName)?
-COLOR_PROPERTY_ARGS:ONE_PROPERTY_ARGS;this._SetCommonProperties(args,tags,time,ease,destroyOnComplete,loop,pingPong);if(NAMESPACE.Maps.IsColorId(propertyName)){COLOR_PROPERTY_ARGS.endValue[R]=C3.GetRValue(endValue);COLOR_PROPERTY_ARGS.endValue[G]=C3.GetGValue(endValue);COLOR_PROPERTY_ARGS.endValue[B]=C3.GetBValue(endValue);COLOR_PROPERTY_ARGS.property=NAMESPACE.Maps.GetPropertyIndexFromName(propertyName)}else if(NAMESPACE.Maps.IsOpacityId(propertyName))ONE_PROPERTY_ARGS.endValue=endValue/100;else ONE_PROPERTY_ARGS.endValue=
-endValue;args.property=NAMESPACE.Maps.GetPropertyIndexFromName(propertyName);return args}static TwoProperties(inst,tags,property,endValueX,endValueY,time,ease,destroyOnComplete,loop,pingPong){this._SetCommonProperties(TWO_PROPERTIES_ARGS,tags,time,ease,destroyOnComplete,loop,pingPong);const pairName=NAMESPACE.Maps.GetPairPropertyFromIndex(property);TWO_PROPERTIES_ARGS.endValue[X]=endValueX;TWO_PROPERTIES_ARGS.endValue[Y]=endValueY;TWO_PROPERTIES_ARGS.property=NAMESPACE.Maps.GetPropertyIndexFromName(pairName);
-return TWO_PROPERTIES_ARGS}static ValueProperty(inst,tags,startValue,endValue,time,ease,destroyOnComplete,loop,pingPong){this._SetCommonProperties(VALUE_PROPERTY_ARGS,tags,time,ease,destroyOnComplete,loop,pingPong);VALUE_PROPERTY_ARGS.startValue=startValue;VALUE_PROPERTY_ARGS.endValue=endValue;VALUE_PROPERTY_ARGS.property=NAMESPACE.Maps.GetPropertyIndexFromName("value");return VALUE_PROPERTY_ARGS}};
-
-}
-
-{
-'use strict';const C3=self.C3;const NAMESPACE=C3.Behaviors.Tween;const TYPE_CHECK_OBJECTS=[];
-NAMESPACE.PropertyTypes=class PropertyTypes{constructor(){}static Pick(property){if(TYPE_CHECK_OBJECTS.length===0){const arr=TYPE_CHECK_OBJECTS;arr.push({checkFunc:NAMESPACE.Maps.IsPairId,result:this.PAIR});arr.push({checkFunc:NAMESPACE.Maps.IsColorId,result:this.COLOR});arr.push({checkFunc:NAMESPACE.Maps.IsAngleId,result:this.ANGLE});arr.push({checkFunc:NAMESPACE.Maps.IsValueId,result:this.VALUE});arr.push({checkFunc:()=>true,result:this.OTHER})}if(C3.IsFiniteNumber(property))property=C3.Behaviors.Tween.Maps.GetPropertyFromIndex(property);
-for(const propertyTypeFunctionObject of TYPE_CHECK_OBJECTS)if(propertyTypeFunctionObject.checkFunc(property))return propertyTypeFunctionObject.result}static get PAIR(){return"pair"}static get COLOR(){return"color"}static get ANGLE(){return"angle"}static get VALUE(){return"value"}static get OTHER(){return"other"}};
-
-}
-
-{
-'use strict';const C3=self.C3;const NAMESPACE=C3.Behaviors.Tween;NAMESPACE.ValueGetters=class ValueGetters{constructor(){}static _GetPropertyAngleValue(value){const r=C3.toRadians(parseFloat(value));return C3.clampAngle(r)}static _GetColorPropertyValue(value){return value.slice(0)}static _GetPropertyValue(value){return value}};
-
 }
 
 {
@@ -3425,11 +4465,10 @@ const C3 = self.C3;
 self.C3_GetObjectRefTable = function () {
 	return [
 		C3.Plugins.Sprite,
-		C3.Behaviors.Tween,
+		C3.Behaviors.lunarray_LiteTween,
 		C3.Plugins.Browser,
 		C3.Plugins.Text,
 		C3.Plugins.System.Cnds.OnLayoutStart,
-		C3.Behaviors.Tween.Acts.TweenOneProperty,
 		C3.Plugins.System.Acts.Wait,
 		C3.Plugins.Browser.Acts.RequestFullScreen,
 		C3.Plugins.System.Cnds.Every,
@@ -3438,7 +4477,7 @@ self.C3_GetObjectRefTable = function () {
 	];
 };
 self.C3_JsPropNameTable = [
-	{Tween: 0},
+	{LiteTween: 0},
 	{Sprite: 0},
 	{Browser: 0},
 	{Text: 0}
@@ -3542,9 +4581,6 @@ function or(l, r)
 }
 
 self.C3_ExpressionFuncs = [
-		() => "",
-		() => 1200,
-		() => 1.5,
 		() => 1,
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
