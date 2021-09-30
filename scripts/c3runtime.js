@@ -3475,6 +3475,8 @@ self.C3_GetObjectRefTable = function () {
 		C3.Behaviors.Tween,
 		C3.Plugins.Sprite,
 		C3.Plugins.System.Cnds.OnLayoutStart,
+		C3.Plugins.System.Acts.Wait,
+		C3.Plugins.Browser.Acts.RequestFullScreen,
 		C3.Behaviors.Tween.Acts.TweenOneProperty,
 		C3.Plugins.System.Cnds.Every,
 		C3.Plugins.Text.Acts.SetText,
@@ -3587,10 +3589,10 @@ function or(l, r)
 }
 
 self.C3_ExpressionFuncs = [
+		() => 1,
 		() => "",
 		() => 680,
 		() => 3,
-		() => 1,
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
 			return () => f0();
