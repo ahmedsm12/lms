@@ -1511,11 +1511,13 @@ p.nominalBounds = new cjs.Rectangle(-6.1,-3.1,1293.2,722);
 	this.instance = new lib.Symbol1();
 	this.instance.parent = this;
 	this.instance.setTransform(639.5,385.1,1,1,0,0,0,640.4,385.1);
+	this.instance.filters = [new cjs.BlurFilter(35, 35, 1)];
+	this.instance.cache(-8,-5,1297,726);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance).wait(60));
 
 }).prototype = p = new cjs.MovieClip();
-p.nominalBounds = new cjs.Rectangle(632.9,356.9,1293.1,722);
+p.nominalBounds = new cjs.Rectangle(614.9,338.9,1333,761);
 // library properties:
 lib.properties = {
 	width: 1280,
