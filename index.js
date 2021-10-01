@@ -1511,7 +1511,6 @@ p.nominalBounds = new cjs.Rectangle(-6.1,-3.1,1293.2,722);
 	this.instance = new lib.Symbol1();
 	this.instance.parent = this;
 	this.instance.setTransform(639.5,385.1,1,1,0,0,0,640.4,385.1);
-	this.instance.cache(-8,-5,1297,726);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance).wait(60));
 
