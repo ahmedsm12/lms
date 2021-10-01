@@ -1554,12 +1554,11 @@ p.nominalBounds = new cjs.Rectangle(-6.1,-3.1,1293.2,722);
 	this.instance.parent = this;
 	this.instance.setTransform(639.5,385.1,1,1,0,0,0,640.4,385.1);
 	this.instance.alpha = 0.34;
-	this.instance.shadow = new cjs.Shadow("rgba(0,0,0,1)",3,3,4);
 
 	this.timeline.addTween(cjs.Tween.get(this.instance).wait(60));
 
 }).prototype = p = new cjs.MovieClip();
-p.nominalBounds = new cjs.Rectangle(629.9,353.9,1307,735);
+p.nominalBounds = new cjs.Rectangle(632.9,356.9,1293.1,722);
 // library properties:
 lib.properties = {
 	width: 1280,
