@@ -3795,10 +3795,11 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.System.Acts.SetVar,
 		C3.Plugins.System.Acts.GoToLayout,
 		C3.Plugins.System.Cnds.Else,
-		C3.Plugins.Browser.Acts.RequestFullScreen,
-		C3.Plugins.Audio.Acts.Stop,
 		C3.Plugins.Browser.Cnds.OnBackButton,
-		C3.Plugins.Mouse.Cnds.IsButtonDown
+		C3.Plugins.Mouse.Cnds.IsButtonDown,
+		C3.Plugins.Browser.Acts.ConsoleLog,
+		C3.Plugins.Browser.Acts.RequestFullScreen,
+		C3.Plugins.Audio.Acts.Stop
 	];
 };
 self.C3_JsPropNameTable = [
@@ -4202,6 +4203,7 @@ self.C3_ExpressionFuncs = [
 			const n0 = p._GetNode(0);
 			return () => n0.ExpInstVar();
 		},
+		() => "hi",
 		() => "loop",
 		() => 1800,
 		() => 10,
